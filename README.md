@@ -1,1 +1,1 @@
-# Professional portfolio site with history API SPA
+# Relatively generic History API SPA
