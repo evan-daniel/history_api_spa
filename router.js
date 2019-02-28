@@ -1,22 +1,33 @@
 export let routerBinding = (handleRedirect) => {
+    const state = {}; 
+
+    // Browser load
     (function() {
-        let href = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');  
-        handleRedirect(window.location.pathname) ? href += window.location.pathname : href += '/'; 
-        history.replaceState(null, '', href); 
+        state.path = handleRedirect(window.location.pathname) ? window.location.pathname : '/'; 
+        history.replaceState(state, '', state.path); 
     })(); 
     
+    // Anchors
     document.addEventListener('click', function() {
-        if(event.target.tagName === 'A' && event.target.href) {
-            event.preventDefault(); 
-            let baseHref = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-            if(handleRedirect(event.target.href.slice(baseHref.length))) {
-                history.pushState(null, '', event.target.href); 
+        event.composedPath().forEach( element => {
+            if(element.tagName === 'A' && element.href) {
+                event.preventDefault(); 
+                
+                const anchorPath = element.href.slice(window.location.origin.length); 
+
+                if (state.path !== anchorPath) {
+                    state.path = handleRedirect(anchorPath) ? anchorPath : '/'; 
+                    history.pushState(state, '', state.path); 
+                }
             }
-            else history.pushState(null, '', baseHref); 
-        }
-    }); 
+        }); 
+    }, true); 
     
+    // Browser back/forwards
     window.addEventListener('popstate', function() {
-        if(handleRedirect(window.location.pathname)) history.replaceState(null, '', window.location.href); 
+        if(state.path !== window.location.pathname && handleRedirect(window.location.pathname)) {
+            state.path = window.location.pathname; 
+            history.replaceState(state, '', state.path); 
+        }
     }); 
 }; 
