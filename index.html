@@ -2,13 +2,6 @@
 <html>
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-83547950-4"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'UA-83547950-4');
-    </script>
 
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,6 +11,18 @@
     <script type="module" src="/main.js"></script>
 </head>
 <body>
-    <div class="app-root"></div>
+    <div class="app-root">
+        <a href="/sample">sample</a>
+        <a href="/landing">landing</a>
+        <a href="/landing/landing-sample-one">landing/sample</a>
+        <a href="/landing/non-landing-subdirectory">landing/non-landing-subdirectory</a>
+        <a href="/landing/non-landing-subdirectory/non-landing-in-landing-sample-one">landing/non-landing-subdirectory/non-landing-in-landing-sample-one</a>
+
+        <a href="/non-landing-subdirectory">non-landing-subdirectory</a>
+        <a href="/non-landing-subdirectory/non-landing-subdirectory-sample-one">non-landing-subdirectory/sample-one</a>
+        <a href="/deedumdeelumdoo">dumdeedumdoo</a>
+    </div>
+
+    <div class="content"></div>
 </body>
 </html>
