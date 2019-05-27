@@ -1,4 +1,4 @@
-import *  as template from '/template.js'; 
+import *  as template from '/script/template.js'; 
 
 // State.path keeps track of current path
 let state = {}; 

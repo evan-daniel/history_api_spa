@@ -7,8 +7,8 @@
     box-sizing: border-box; 
     height: 100.1vh; 
 }
-
 *, 
+
 ::before, 
 ::after {
     box-sizing: inherit; 
