@@ -72,7 +72,7 @@ function confirmPath(path) {
                 for(let i = 0; i < page.directories.length; i++) {
                     const subdirectoryPage = checkDirectories(page.directories[i]); 
                     if(subdirectoryPage.path !== '/') return {path: path, static: subdirectoryPage.static, content: subdirectoryPage.content}; 
-                }
+                } 
             }
         } 
 
