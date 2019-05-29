@@ -1,14 +1,12 @@
 package hotreload
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
-
-	"golang.org/x/sync/errgroup"
+	"time"
 )
+
+var sendReload = make(chan string)
 
 func Init(path ...string) {
 
@@ -16,26 +14,42 @@ func Init(path ...string) {
 	for _, p := range path {
 		findFiles(&watchedFiles, p)
 	}
-	fmt.Println(watchedFiles)
 
-	errs, _ := errgroup.WithContext(context.Background())
-	for i := 0; i < len(watchedFiles); i++ {
-		errs.Go(func() error {
-			fmt.Println(watchedFiles[0])
-			watchFile(watchedFiles[i])
-			return errors.New("This is a textual error.")
-		})
+	sleepTime := 1000 * time.Millisecond
+	for _, wf := range watchedFiles {
+		go watchFile(wf, sleepTime)
 	}
 
-	errs.Wait()
-	fmt.Println("Done.")
+	go func() {
+		for {
+			var newWatchedFiles []string
+			for _, p := range path {
+				findFiles(&newWatchedFiles, p)
+			}
 
+			for _, nwf := range newWatchedFiles {
+				found := false
+				for _, wf := range watchedFiles {
+					if nwf == wf {
+						found = true
+					}
+				}
+				if !found {
+					fmt.Println(nwf)
+					go watchFile(nwf, sleepTime)
+					watchedFiles = append(watchedFiles, nwf)
+				}
+			}
+
+			time.Sleep(sleepTime * 5)
+		}
+	}()
 }
 
 func findFiles(fileList *[]string, directory string) {
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	for _, f := range files {

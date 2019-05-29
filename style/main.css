@@ -3,7 +3,7 @@
  */
 
 :root {
-    font-family: 'Helvetica Neue', Helvetica, sans-serif; 
+    font-family: monospace; 
     box-sizing: border-box; 
     height: 100.1vh; 
 }
@@ -17,4 +17,12 @@
 
 .app-root {
     white-space: pre-line; 
+}
+
+.app-root a:first-of-type {
+    background-color: #0f0; 
+}
+
+.app-root a:nth-of-type(4) {
+    /* background-color: #f0f;  */
 }

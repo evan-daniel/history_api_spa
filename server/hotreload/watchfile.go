@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func watchFile(filePath string) error {
+func watchFile(filePath string, sleepTime time.Duration) error {
 	initialStat, err := os.Stat(filePath)
 	if err != nil {
 		return err
@@ -15,14 +15,18 @@ func watchFile(filePath string) error {
 	for {
 		stat, err := os.Stat(filePath)
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
-		if stat.ModTime() != initialStat.ModTime() {
-			break
+		if initialStat.ModTime().Before(stat.ModTime()) {
+			fmt.Println("File changed.")
+			sendReload <- "Please consider reloading."
+			initialStat, err = os.Stat(filePath)
+			if err != nil {
+				fmt.Println(err)
+				return err
+			}
 		}
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(sleepTime)
 	}
-
-	fmt.Println("File changed.")
-	return nil
 }
