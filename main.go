@@ -1,31 +1,34 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"history_api_spa/server/hotreload"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
 )
 
 var page = template.Must(template.ParseFiles("template/index.html"))
+var dev = flag.Bool("dev", false, "Is dev?  Is dev.")
 
 func init() {
-	hotreload.Init("./script", "./style")
+	flag.Parse()
+	fmt.Println(*dev)
+	if *dev {
+		hotreload.Init("./script", "./style", "./template")
+	}
 }
 
 func main() {
 
-	// Print files in current directory
-	// files, err := ioutil.ReadDir("./")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// for _, f := range files {
-	// 	fmt.Println(f.Name())
-	// }
-
 	// Index and static
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		page.Execute(w, nil)
+		if *dev {
+			page = template.Must(template.ParseFiles("template/index.html"))
+		}
+		template.Must(template.ParseFiles("template/index.html")).Execute(w, nil)
 	})
 	http.Handle("/document/", http.StripPrefix("/document/", http.FileServer(http.Dir("/document/"))))
 	http.Handle("/script/", http.StripPrefix("/script/", http.FileServer(http.Dir("./script/"))))
@@ -33,7 +36,14 @@ func main() {
 	http.Handle("/template/", http.StripPrefix("/template/", http.FileServer(http.Dir("./template/"))))
 
 	// Reload
-	http.HandleFunc("/hotreload", hotreload.WebSocket)
+	if *dev {
+		http.HandleFunc("/hotreload", hotreload.WebSocket)
+	}
 
-	http.ListenAndServe(":3000", nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	fmt.Println("On port " + port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
