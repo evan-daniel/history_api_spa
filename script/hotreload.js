@@ -6,7 +6,4 @@ websocket.addEventListener('message', websocketMessage => {
     if(msg.Message === 'Please consider reloading.') {
         location.reload(true); 
     }
-
-    // Test. 
-    // Test. 
 }); 

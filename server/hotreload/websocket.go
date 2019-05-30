@@ -21,6 +21,8 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 		if err := conn.WriteJSON(struct{ Message string }{Message: msg}); err != nil {
 			fmt.Println(err)
 		}
+		if msg == "Please consider reloading." {
+			break
+		}
 	}
-
 }
