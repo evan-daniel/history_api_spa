@@ -1,0 +1,19 @@
+runtime: go112
+
+handlers: 
+- url: /document
+  static_dir: document
+
+- url: /script
+  static_dir: script
+
+- url: /style
+  static_dir: style
+
+- url: /template
+  static_dir: template
+
+- url: /.*
+  secure: always
+  redirect_http_response_code: 301
+  script: auto

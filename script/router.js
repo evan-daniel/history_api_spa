@@ -40,19 +40,12 @@ document.addEventListener('click', function() {
     }); 
 }, true); 
 
-// Event listener for browser back/forwards
-window.addEventListener('popstate', function() {
-    if(state.path !== window.location.pathname) {
-        state.path = window.location.pathname; 
-        history.replaceState(state, '', state.path); 
-    }
-}); 
-
 function confirmPath(path) {
 
     // Static items
     if(path.charAt(path.length-1) === '/') path = path.slice(0, -1); 
     let pathItems = path.split('/'); 
+    const stateList = pathItems.slice(1); 
 
     // Recursive
     function checkDirectories(page) {
@@ -64,20 +57,20 @@ function confirmPath(path) {
         if(page.path === pathItems[0]) {
             
             // Whittled it down correctly
-            if(pathItems.length === 1 && page.content) return {path: path, static: page.static, content: page.content}; 
+            if(pathItems.length === 1 && page.content) return {path: path, list: stateList, static: page.static, content: page.content}; 
             
             // Maybe there are subdirectories to check
             if(page.directories) {
                 pathItems.shift(); 
                 for(let i = 0; i < page.directories.length; i++) {
                     const subdirectoryPage = checkDirectories(page.directories[i]); 
-                    if(subdirectoryPage.path !== '/') return {path: path, static: subdirectoryPage.static, content: subdirectoryPage.content}; 
+                    if(subdirectoryPage.path !== '/') return {path: path, list: stateList, static: subdirectoryPage.static, content: subdirectoryPage.content}; 
                 } 
             }
         } 
 
         // If the page wasn't found, just go to index
-        return {path: '/', static: template.pages.static, content: template.pages.content}; 
+        return {path: '/', list: [], static: template.pages.static, content: template.pages.content}; 
 
     }
     return checkDirectories(template.pages); 
