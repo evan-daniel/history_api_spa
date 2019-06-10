@@ -14,15 +14,31 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer conn.Close()
+	fmt.Println("WS connected.")
 
-	for {
-		msg := <-sendReload
+	after := func() {
+		conn.Close()
+		fmt.Println("Connection has closed all the way.")
+	}
+	defer after()
+
+	var disconnected bool
+
+	go (func() {
+		if _, _, err := conn.ReadMessage(); err != nil {
+			if !disconnected {
+				sendReload <- "discard"
+			}
+			fmt.Println("Disconnected.")
+		}
+	})()
+
+	msg := <-sendReload
+	if msg != "discard" {
 		if err := conn.WriteJSON(struct{ Message string }{Message: msg}); err != nil {
 			fmt.Println(err)
 		}
-		if msg == "Please consider reloading." {
-			break
-		}
 	}
+	disconnected = true
+	fmt.Println("Connection closing.")
 }
